@@ -34,6 +34,9 @@
     UIBarButtonItem *reset = [[UIBarButtonItem alloc] initWithTitle:@"Reset" style:UIBarButtonItemStylePlain target:self action:@selector(reset:)];
     self.navigationItem.rightBarButtonItem = reset;
     
+    UIBarButtonItem *send = [[UIBarButtonItem alloc] initWithTitle:@"Send" style:UIBarButtonItemStylePlain target:self action:@selector(send:)];
+    self.navigationItem.leftBarButtonItem = send;
+    
     UIButton *location = [UIButton buttonWithType:UIButtonTypeCustom];
     location.layer.cornerRadius = 25;
     location.layer.backgroundColor = [UIColor colorWithRed:249/255.f green:249/255.f blue:249/255.f alpha:1].CGColor;
@@ -72,12 +75,13 @@
     SpecialInteractionTextField *siTitleTextField = [[SpecialInteractionTextField alloc] init];
     siTitleTextField.placeholder = @"Title";
     siTitleTextField.tagName = @"title";
+    siTitleTextField.inputValue = @"title";
     [self.view addSubview:siTitleTextField];
     
     SpecialInteractionTextField *siPriceTextField = [[SpecialInteractionTextField alloc] init];
     siPriceTextField.placeholder = @"Price";
     siPriceTextField.tagName = @"price";
-    siPriceTextField.expectedInputType = ExpectedInputTypeNumber;
+    siPriceTextField.expectedInputType = ExpectedInputTypeIntegralNumber;
     [self.view addSubview:siPriceTextField];
     
     SpecialInteractionTextField *siLocationTextField = [[SpecialInteractionTextField alloc] init];
@@ -88,6 +92,13 @@
     SpecialInteractionTextField *siDescriptionTextField = [[SpecialInteractionTextField alloc] init];
     siDescriptionTextField.placeholder = @"Description";
     siDescriptionTextField.tagName = @"description";
+    siDescriptionTextField.expectedInputType = ExpectedInputTypeCustom;
+    siDescriptionTextField.customInputCheck = ^BOOL(NSString * _Nonnull text) {
+        if ([text isEqualToString:@"123"]) {
+            return YES;
+        }
+        return NO;
+    };
     [self.view addSubview:siDescriptionTextField];
     
     SpecialInteractionTextField *siPasswordTextField = [[SpecialInteractionTextField alloc] init];
@@ -207,10 +218,16 @@
     [self.siManager addItem:siPasswordTextField];
     [self.siManager addItem:siEmailTextField];
     
+    [self.siManager manageReturnKeyTypeWithLastKeyType:UIReturnKeyDone];
+    
 }
 
 - (void)reset:(UIBarButtonItem *)sender {
     [self.siManager resetAllValues];
+}
+
+- (void)send:(UIBarButtonItem *)sender {
+    NSLog(@"%@", [self.siManager getAllKeyValues]);
 }
 
 

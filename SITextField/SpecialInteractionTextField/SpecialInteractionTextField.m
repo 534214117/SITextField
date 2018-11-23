@@ -36,11 +36,26 @@
 
 #pragma mark - Public Func
 
+- (void)beFirstResponder {
+    [self.eiTextField becomeFirstResponder];
+}
+
 
 #pragma mark- Func
 - (void)specialInputCheck {
     if (self.expectedInputType == ExpectedInputTypeEmail && ![self checkEmail:self.eiTextField.text]) {
         [self inputNonconformityAnimation];
+    }
+    else if (self.expectedInputType == ExpectedInputTypeNumber && ![self checkNumber:self.eiTextField.text]) {
+        [self inputNonconformityAnimation];
+    }
+    else if (self.expectedInputType == ExpectedInputTypeIntegralNumber && ![self checkIntegralNumber:self.eiTextField.text]) {
+        [self inputNonconformityAnimation];
+    }
+    else if (self.expectedInputType == ExpectedInputTypeCustom && self.customInputCheck) {
+        if (self.customInputCheck && !self.customInputCheck(self.inputValue)) {
+            [self inputNonconformityAnimation];
+        }
     }
 }
 
@@ -48,6 +63,18 @@
     NSString *emailRegex = @"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}";
     NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES%@",emailRegex];
     return [emailTest evaluateWithObject:email];
+}
+
+- (BOOL)checkNumber:(NSString *)number {
+    NSScanner* scan = [NSScanner scannerWithString:number];
+    float val;
+    return [scan scanFloat:&val] && [scan isAtEnd];
+}
+
+- (BOOL)checkIntegralNumber:(NSString *)integralNumber {
+    NSScanner* scan = [NSScanner scannerWithString:integralNumber];
+    int val;
+    return [scan scanInt:&val] && [scan isAtEnd];
 }
 
 - (void)defaultSetting {
@@ -108,7 +135,6 @@
 }
 
 - (void)inputNonconformityAnimation {
-    NSLog(@"123");
     self.animating = YES;
     [self.eiTextField.layer pop_removeAllAnimations];
     UIColor *color = self.backgroundColor ? self.backgroundColor : [UIColor clearColor];
@@ -142,8 +168,8 @@
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
     if (self.showFocusAnimation && !self.animating) {
         [self beginFocusAnimation];
+        self.kraView.placeholderTintColor = self.placeholderTintColor;
     }
-    self.kraView.placeholderTintColor = self.placeholderTintColor;
     return !self.animating;
 }
 
@@ -167,6 +193,7 @@
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+    _inputValue = [NSString stringWithFormat:@"%@%@", textField.text, string];
     if ((!textField.text || textField.text.length == 0) && (string && string.length > 0)) {
         [self inputTextAnimation];
     }
@@ -178,6 +205,16 @@
 
 - (BOOL)textFieldShouldClear:(UITextField *)textField {
     [self clearTextAnimation];
+    return YES;
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    if (textField.returnKeyType == UIReturnKeyNext && self.nextSITextField) {
+        [self.nextSITextField beFirstResponder];
+    }
+    else if (textField.returnKeyType == UIReturnKeyDone) {
+        [self.eiTextField resignFirstResponder];
+    }
     return YES;
 }
 
@@ -217,9 +254,16 @@
 
 
 #pragma mark - Override
+
 - (void)setInputValue:(NSString *)inputValue {
     _inputValue = inputValue;
     _eiTextField.text = inputValue;
+    if (!inputValue || inputValue.length == 0) {
+        [self clearTextAnimation];
+    }
+    else {
+        [self inputTextAnimation];
+    }
 }
 
 - (void)setFont:(UIFont *)font {

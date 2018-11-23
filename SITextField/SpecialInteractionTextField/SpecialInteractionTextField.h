@@ -40,9 +40,14 @@ typedef NS_ENUM(NSInteger, ExpectedInputType) {
 @property (nonatomic, assign) BOOL           nonEmpty;
 
 
+@property (nonatomic, copy)  BOOL  (^customInputCheck)(NSString *text);
+
+
 // 最好用SpecialInteractionManager操作该值
 @property (nonatomic) UIReturnKeyType        returnKeyType;
+@property (nonatomic, strong) SpecialInteractionTextField *nextSITextField;
 
+- (void)beFirstResponder;
 
 @end
 

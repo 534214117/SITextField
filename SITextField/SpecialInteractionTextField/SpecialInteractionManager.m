@@ -10,12 +10,35 @@
 
 @interface SpecialInteractionManager ()
 
-
+@property (nonatomic, strong) NSMutableArray<SpecialInteractionTextField *> *subviewArray;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSString *>   *formDictionary;
 
 @end
 
 @implementation SpecialInteractionManager
+
+- (void)manageReturnKeyTypeWithLastKeyType:(UIReturnKeyType)returnKeyType {
+    for (int i = 1; i < self.subviewArray.count; i++) {
+        SpecialInteractionTextField *siTextField1 = self.subviewArray[i-1];
+        SpecialInteractionTextField *siTextField2 = self.subviewArray[i];
+        siTextField1.nextSITextField = siTextField2;
+        siTextField1.returnKeyType = UIReturnKeyNext;
+        siTextField2.returnKeyType = returnKeyType ? returnKeyType : UIReturnKeyDone;
+    }
+}
+
+- (SpecialInteractionManager *(^)(SpecialInteractionTextField *))addItem {
+    if (!_subviewArray) {
+        _subviewArray = [NSMutableArray new];
+    }
+    return ^SpecialInteractionManager *(SpecialInteractionTextField *item){
+        if (![self->_subviewArray containsObject:item]) {
+            [self->_subviewArray addObject:item];
+        }
+        //block块内部再返回一个instance实例
+        return self;
+    };
+}
 
 - (void)addItem:(SpecialInteractionTextField *)item {
     if (![self.subviewArray containsObject:item]) {

@@ -22,28 +22,20 @@
 
 #pragma mark - Public Func
 - (void)hideFakePlaceholderAndShowSmallTip {
-    CGRect smallFrame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height * 1 / 3.f);
     [self.smallTipLable.layer removeAllAnimations];
     [UIView animateWithDuration:0.3 animations:^{
         self.fakePlaceholderLabel.alpha = 0;
         self.smallTipLable.alpha = 1;
-        self.smallTipLable.frame = smallFrame;
     } completion:^(BOOL finished) {
-        
     }];
 }
 
 - (void)hideSmallTipAndShowFakePlaceholder {
-    CGRect smallFrame = CGRectMake(0, self.frame.size.height * 1 / 3.f, self.frame.size.width, self.frame.size.height * 1 / 3.f);
     [self.smallTipLable.layer removeAllAnimations];
     [UIView animateWithDuration:0.3 animations:^{
         self.fakePlaceholderLabel.alpha = 1;
         self.smallTipLable.alpha = 0;
     } completion:^(BOOL finished) {
-        // 兼容刚刚清空立马输入的情况 不加动画会有问题
-        if (!self.smallTipLable.alpha) {
-            self.smallTipLable.frame = smallFrame;
-        }
     }];
 }
 
@@ -59,7 +51,7 @@
         fakePlaceholderLabel.size.height = frame.size.height * 2 / 3.f;
         self.fakePlaceholderLabel    = [[UILabel alloc] initWithFrame:fakePlaceholderLabel];
         self.fakePlaceholderLabel.numberOfLines = 1;
-        self.smallTipLable           = [[UILabel alloc] initWithFrame:CGRectMake(0, frame.size.height * 1 / 3.f, frame.size.width, frame.size.height * 1 / 3.f)];
+        self.smallTipLable           = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height * 1 / 3.f)];
         self.smallTipLable.numberOfLines = 1;
         self.smallTipLable.alpha = 0;
         [self addSubview:self.fakePlaceholderLabel];
@@ -71,7 +63,7 @@
         fakePlaceholderLabel.origin.y = frame.size.height * 1 / 3.f;
         fakePlaceholderLabel.size.height = frame.size.height * 2 / 3.f;
         self.fakePlaceholderLabel.frame    = fakePlaceholderLabel;
-        self.smallTipLable.frame           = CGRectMake(0, frame.size.height * 1 / 3.f, frame.size.width, frame.size.height * 1 / 3.f);
+        self.smallTipLable.frame           = CGRectMake(0, 0, frame.size.width, frame.size.height * 1 / 3.f);
     }
 }
 

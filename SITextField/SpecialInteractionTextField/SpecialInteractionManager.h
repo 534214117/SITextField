@@ -13,9 +13,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SpecialInteractionManager : NSObject
 
-@property (nonatomic, strong) NSMutableArray<SpecialInteractionTextField *> *subviewArray;
-
 - (void)addItem:(SpecialInteractionTextField *)item;
+//把所有的输入框添加到SpecialInteractionManager类后，再调用此方法
+- (void)manageReturnKeyTypeWithLastKeyType:(UIReturnKeyType)returnKeyType;
 - (void)resetAllValues;
 - (NSDictionary *)getAllKeyValues;
 
